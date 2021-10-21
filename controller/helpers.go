@@ -2,8 +2,8 @@ package controller
 
 import (
 	"errors"
-	"github/BayMaxx2001/ManagerEmployees/model"
-	"github/BayMaxx2001/ManagerEmployees/scan"
+	"github/BayMaxx2001/manager-employees/model"
+	"github/BayMaxx2001/manager-employees/scan"
 )
 
 //set id of employee

@@ -3,7 +3,7 @@ package scan
 import (
 	"errors"
 	"fmt"
-	"github/BayMaxx2001/ManagerEmployees/model"
+	"github/BayMaxx2001/manager-employees/model"
 	"strconv"
 	"strings"
 	"time"

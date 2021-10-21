@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github/BayMaxx2001/ManagerEmployees/controller"
-	"github/BayMaxx2001/ManagerEmployees/menu"
-	"github/BayMaxx2001/ManagerEmployees/scan"
+	"github/BayMaxx2001/manager-employees/controller"
+	"github/BayMaxx2001/manager-employees/menu"
+	"github/BayMaxx2001/manager-employees/scan"
 )
 
 func main() {

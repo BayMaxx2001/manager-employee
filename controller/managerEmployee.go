@@ -3,8 +3,8 @@ package controller
 import (
 	"errors"
 	"fmt"
-	"github/BayMaxx2001/ManagerEmployees/model"
-	"github/BayMaxx2001/ManagerEmployees/scan"
+	"github/BayMaxx2001/manager-employees/model"
+	"github/BayMaxx2001/manager-employees/scan"
 )
 
 type ListEmployee struct {
