@@ -1,9 +1,10 @@
 package httpapi
 
 import (
+	"github.com/urfave/cli/v2"
+
 	"github.com/BayMaxx2001/manager-employee/employee/internal/config"
 	"github.com/BayMaxx2001/manager-employee/employee/internal/persistence"
-	"github.com/urfave/cli/v2"
 )
 
 func CommandRunServer() *cli.Command {
@@ -15,7 +16,7 @@ func CommandRunServer() *cli.Command {
 			&cli.StringFlag{
 				Name:    "address",
 				Aliases: []string{"addr"},
-				Value:   "localhost:8080",
+				Value:   "localhost:8282",
 				Usage:   "specify which address to serve on",
 			},
 		},

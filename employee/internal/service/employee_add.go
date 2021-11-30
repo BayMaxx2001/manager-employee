@@ -5,9 +5,8 @@ import (
 
 	"github.com/BayMaxx2001/manager-employee/employee/internal/model"
 	"github.com/BayMaxx2001/manager-employee/employee/internal/persistence"
-	"github.com/google/uuid"
-
 	"github.com/asaskevich/govalidator"
+	"github.com/google/uuid"
 )
 
 type AddEmployeeCommand struct {
@@ -35,10 +34,11 @@ func AddEmployee(ctx context.Context, command AddEmployeeCommand) (employee mode
 	}
 
 	employee = model.Employee{
-		UID:    uuid.NewString(),
-		Name:   command.Name,
-		DOB:    command.DOB,
-		Gender: command.Gender,
+		UID:       uuid.NewString(),
+		Name:      command.Name,
+		DOB:       command.DOB,
+		Gender:    command.Gender,
+		ListTeams: []string{},
 	}
 
 	err = persistence.Employees().Save(ctx, employee)

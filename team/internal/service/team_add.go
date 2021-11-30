@@ -5,9 +5,8 @@ import (
 
 	"github.com/BayMaxx2001/manager-employee/team/internal/model"
 	"github.com/BayMaxx2001/manager-employee/team/internal/persistence"
-	"github.com/google/uuid"
-
 	"github.com/asaskevich/govalidator"
+	"github.com/google/uuid"
 )
 
 type AddTeamCommand struct {
@@ -30,8 +29,9 @@ func AddTeam(ctx context.Context, command AddTeamCommand) (team model.Team, err 
 		return
 	}
 	team = model.Team{
-		UID:  uuid.NewString(),
-		Name: command.Name,
+		UID:           uuid.NewString(),
+		Name:          command.Name,
+		ListEmployees: []string{},
 	}
 	err = persistence.Teams().Save(ctx, team)
 	return

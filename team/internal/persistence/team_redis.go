@@ -74,6 +74,24 @@ func (repo *redisTeamRepository) Remove(ctx context.Context, uid string) error {
 	return err
 }
 
+func (repo *redisTeamRepository) AddTeamToEmplopyee(ctx context.Context, team model.Team, eid string) error {
+	team.ListEmployees = append(team.ListEmployees, eid)
+	rdStatus := repo.set(team.UID, httputil.BindJSON(team), time.Hour)
+	return rdStatus
+}
+
+func (repo *redisTeamRepository) DeleteTeamToEmployee(ctx context.Context, team model.Team, eid string) error {
+	for i, emplId := range team.ListEmployees {
+		if emplId == eid {
+			team.ListEmployees = append(team.ListEmployees[:i], team.ListEmployees[i+1:]...)
+			fmt.Println(len(team.ListEmployees), "------------")
+			break
+		}
+	}
+	rdStatus := repo.set(team.UID, httputil.BindJSON(team), time.Hour)
+	return rdStatus
+}
+
 func (repo *redisTeamRepository) GetAll(ctx context.Context) (teams []model.Team, err error) {
 	var cursor uint64
 	for {

@@ -81,3 +81,29 @@ func (e *employeeMongoRedis) Remove(ctx context.Context, uid string) error {
 func (e *employeeMongoRedis) GetAll(ctx context.Context) (ls []model.Employee, err error) {
 	return e.employeeMongo.GetAll(ctx)
 }
+
+func (e *employeeMongoRedis) AddEmployeeToTeam(ctx context.Context, employee model.Employee, tid string) error {
+	err := e.employeeCache.AddEmployeeToTeam(ctx, employee, tid)
+	if err != nil {
+		return err
+	}
+
+	err = e.employeeMongo.AddEmployeeToTeam(ctx, employee, tid)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (e *employeeMongoRedis) DeleteEmployeeToTeam(ctx context.Context, employee model.Employee, tid string) error {
+	err := e.employeeCache.DeleteEmployeeToTeam(ctx, employee, tid)
+	if err != nil {
+		return err
+	}
+
+	err = e.employeeMongo.DeleteEmployeeToTeam(ctx, employee, tid)
+	if err != nil {
+		return err
+	}
+	return nil
+}

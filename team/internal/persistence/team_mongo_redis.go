@@ -80,3 +80,29 @@ func (t *teamMongoRedis) GetAll(ctx context.Context) (ls []model.Team, err error
 	}
 	return
 }
+
+func (t *teamMongoRedis) AddTeamToEmplopyee(ctx context.Context, team model.Team, eid string) error {
+	err := t.teamCache.AddTeamToEmplopyee(ctx, team, eid)
+	if err != nil {
+		return err
+	}
+
+	err = t.teamMongo.AddTeamToEmplopyee(ctx, team, eid)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t *teamMongoRedis) DeleteTeamToEmployee(ctx context.Context, team model.Team, eid string) error {
+	err := t.teamCache.DeleteTeamToEmployee(ctx, team, eid)
+	if err != nil {
+		return err
+	}
+
+	err = t.teamMongo.DeleteTeamToEmployee(ctx, team, eid)
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -3,6 +3,7 @@ package persistence
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"time"
 
@@ -103,6 +104,24 @@ func (repo *redisEmployeeRepository) GetAll(ctx context.Context) (ls []model.Emp
 		}
 	}
 	return
+}
+
+func (repo *redisEmployeeRepository) AddEmployeeToTeam(ctx context.Context, employee model.Employee, tid string) error {
+	employee.ListTeams = append(employee.ListTeams, tid)
+	rdStatus := repo.set(employee.UID, httputil.BindJSON(employee), time.Hour)
+	return rdStatus
+}
+
+func (repo *redisEmployeeRepository) DeleteEmployeeToTeam(ctx context.Context, employee model.Employee, tid string) error {
+	for i, teamid := range employee.ListTeams {
+		if teamid == tid {
+			fmt.Println(teamid, " ---")
+			employee.ListTeams = append(employee.ListTeams[:i], employee.ListTeams[i+1:]...)
+			break
+		}
+	}
+	rdStatus := repo.set(employee.UID, httputil.BindJSON(employee), time.Hour)
+	return rdStatus
 }
 
 // redis

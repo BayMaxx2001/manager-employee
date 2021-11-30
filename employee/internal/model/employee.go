@@ -1,6 +1,8 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 const (
 	GENDER_UNKNOWN = iota
@@ -13,7 +15,7 @@ type Employee struct {
 	Name      string   `json:"name"`
 	DOB       string   `json:"dob"`
 	Gender    int      `json:"gender"`
-	ListTeams []string `json:"list_team"`
+	ListTeams []string `json:"listteams"`
 }
 
 func (s *Employee) GenderStr() string {

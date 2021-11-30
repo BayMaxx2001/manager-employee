@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/BayMaxx2001/manager-employee/team/internal/config"
@@ -77,6 +78,25 @@ func (repo *mongoTeamRepository) GetAll(ctx context.Context) (ls []model.Team, e
 	return repo.filterTeam(ctx, filter)
 }
 
+func (repo *mongoTeamRepository) AddTeamToEmplopyee(ctx context.Context, team model.Team, eid string) error {
+	fmt.Println(eid, "addTeamToemployee")
+	_, err := repo.collection.UpdateOne(
+		ctx,
+		bson.M{"uid": team.UID},
+		bson.M{"$push": bson.M{"listemployees": eid}},
+	)
+	return err
+}
+
+func (repo *mongoTeamRepository) DeleteTeamToEmployee(ctx context.Context, team model.Team, eid string) error {
+	_, err := repo.collection.UpdateOne(
+		ctx,
+		bson.M{"uid": team.UID},
+		bson.M{"$pull": bson.M{"listemployees": eid}},
+	)
+	return err
+
+}
 func (repo *mongoTeamRepository) filterTeam(ctx context.Context, filter interface{}) ([]model.Team, error) {
 	var lsTeams []model.Team
 

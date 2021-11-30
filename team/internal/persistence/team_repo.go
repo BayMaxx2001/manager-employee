@@ -16,6 +16,8 @@ type TeamRepository interface {
 	Update(ctx context.Context, uid string, Team model.Team) error
 	Remove(ctx context.Context, uid string) error
 	GetAll(ctx context.Context) ([]model.Team, error)
+	AddTeamToEmplopyee(ctx context.Context, team model.Team, eid string) error
+	DeleteTeamToEmployee(ctx context.Context, team model.Team, eid string) error
 }
 
 func Teams() TeamRepository {

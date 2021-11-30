@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -78,48 +77,68 @@ func (repo *mongoEmployeeRepository) GetAll(ctx context.Context) (ls []model.Emp
 	return repo.filterEmployee(ctx, filter)
 }
 
+func (repo *mongoEmployeeRepository) AddEmployeeToTeam(ctx context.Context, employee model.Employee, tid string) error {
+	_, err := repo.collection.UpdateOne(
+		ctx,
+		bson.M{"uid": employee.UID},
+		bson.M{"$push": bson.M{"listteams": tid}},
+	)
+
+	return err
+}
+
+func (repo *mongoEmployeeRepository) DeleteEmployeeToTeam(ctx context.Context, employee model.Employee, tid string) error {
+	_, err := repo.collection.UpdateOne(
+		ctx,
+		bson.M{"uid": employee.UID},
+		bson.M{"$pull": bson.M{"listteams": tid}},
+	)
+
+	return err
+}
+
 func (repo *mongoEmployeeRepository) filterEmployee(ctx context.Context, filter interface{}) ([]model.Employee, error) {
-	var lsEmployees []model.Employee
+	var Employees []model.Employee
 
 	cur, err := repo.collection.Find(ctx, filter)
 	if err != nil {
-		return lsEmployees, err
+		return Employees, err
 	}
 
 	for cur.Next(ctx) {
 		var e model.Employee
 		err := cur.Decode(&e)
 		if err != nil {
-			return lsEmployees, err
+			return Employees, err
 		}
 
-		lsEmployees = append(lsEmployees, e)
+		Employees = append(Employees, e)
 	}
 
 	if err := cur.Err(); err != nil {
-		return lsEmployees, err
+		return Employees, err
 	}
 
 	// once exhausted, close the cursor
 	cur.Close(ctx)
 
-	if len(lsEmployees) == 0 {
-		return lsEmployees, mongo.ErrNoDocuments
+	if len(Employees) == 0 {
+		return Employees, mongo.ErrNoDocuments
 	}
 
-	return lsEmployees, nil
+	return Employees, nil
 }
 
 type employeeDocument struct {
-	Name   string             `bson:"name"`
-	DOB    primitive.DateTime `bson:"dob"`
-	Gender int                `bson:"gender"`
+	Name   string `bson:"name"`
+	DOB    string `bson:"dob"`
+	Gender int    `bson:"gender"`
 }
 
 func toEmployeeDocument(e model.Employee) employeeDocument {
 	return employeeDocument{
 		Name:   e.Name,
-		DOB:    primitive.NewDateTimeFromTime(e.DobFormat("2006-02-01")),
+		DOB:    e.DOB,
 		Gender: e.Gender,
 	}
 }

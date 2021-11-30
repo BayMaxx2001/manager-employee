@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/BayMaxx2001/manager-employee/pkg/httputil"
 	"github.com/go-chi/chi"
 )
 
@@ -23,7 +24,6 @@ func NewSubscriber(name string) *Subscriber {
 
 func HTTPHandler(w http.ResponseWriter, r *http.Request) {
 	event := chi.URLParam(r, "event")
-
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -32,6 +32,9 @@ func HTTPHandler(w http.ResponseWriter, r *http.Request) {
 	dispatchEvent(event, b)
 
 	w.WriteHeader(http.StatusOK)
+	_ = httputil.WriteJsonOK(w, httputil.ResponseBody{
+		Message: httputil.Message(http.StatusOK, httputil.Success),
+	})
 }
 
 func dispatchEvent(event string, data []byte) {
@@ -42,7 +45,6 @@ func dispatchEvent(event string, data []byte) {
 	if !ok || subs == nil || len(subs) == 0 {
 		return
 	}
-
 	for _, sub := range subs {
 		go func(sub Subscriber) {
 			sub.C <- data
@@ -58,7 +60,6 @@ func ConnectSub(s Subscriber, eventName string) error {
 	if !ok {
 		subs = make([]Subscriber, 0)
 	}
-
 	for _, sub := range subs {
 		if sub.Name == s.Name {
 			return errors.New("subscriber already registered")
@@ -93,6 +94,6 @@ func DisconnectSub(p Subscriber, eventName string) error {
 	return nil
 }
 
-func init() {
+func Init() {
 	_eventSubs = make(map[string][]Subscriber)
 }

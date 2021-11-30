@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+
 	"net/http"
 	"net/url"
 	"sync"
@@ -24,12 +25,12 @@ func NewPublisher(name string, endpoint url.URL, header http.Header) *Publisher 
 	return &Publisher{name, endpoint, header}
 }
 
-func (p *Publisher) doRequest(e messaging.Event) error {
+func (p *Publisher) doRequest(e messaging.Event, method string) error {
 	if e.Name() == "" || e.JSON() == nil || len(e.JSON()) == 0 {
 		return errors.New("publisher cannot do request with invalid event")
 	}
 
-	req, err := http.NewRequest(http.MethodPost, p.Endpoint.String(), bytes.NewBuffer(e.JSON()))
+	req, err := http.NewRequest(method, p.Endpoint.String(), bytes.NewBuffer(e.JSON()))
 	if err != nil {
 		return err
 	}
@@ -48,15 +49,14 @@ func (p *Publisher) doRequest(e messaging.Event) error {
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("published event [%s] received invalid status code (%v)", e.Name(), resp.StatusCode)
 	}
-
 	return nil
 }
 
-func ConnectPub(p Publisher, eventName string) error {
+func ConnectPub(p Publisher, Name string) error {
 	_mu.Lock()
 	defer _mu.Unlock()
 
-	pubs, ok := _eventPubs[eventName]
+	pubs, ok := _eventPubs[Name]
 	if !ok {
 		pubs = make([]Publisher, 0)
 	}
@@ -68,7 +68,7 @@ func ConnectPub(p Publisher, eventName string) error {
 	}
 
 	pubs = append(pubs, p)
-	_eventPubs[eventName] = pubs
+	_eventPubs[Name] = pubs
 
 	return nil
 }
@@ -96,18 +96,19 @@ func DisconnectPub(p Publisher, eventName string) error {
 }
 
 // @TODO: handling error
-func Publish(event messaging.Event) {
+func Publish(event messaging.Event, method string) {
 	_mu.RLock()
 	pubs := _eventPubs[event.Name()]
 	_mu.RUnlock()
 
 	for _, pub := range pubs {
 		go func() {
-			_ = pub.doRequest(event)
+			pub.doRequest(event, method)
 		}()
 	}
 }
 
-func init() {
+func Init() {
 	_eventPubs = make(map[string][]Publisher)
+
 }

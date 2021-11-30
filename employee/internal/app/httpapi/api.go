@@ -5,11 +5,13 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"time"
 
+	"github.com/BayMaxx2001/manager-employee/pkg/messaging/httppub"
 	"github.com/BayMaxx2001/manager-employee/pkg/messaging/httpsub"
 	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/chi/middleware"
 )
 
 func Routes(mux *chi.Mux) {
@@ -23,8 +25,10 @@ func Routes(mux *chi.Mux) {
 			r.Put("/{uid}", UpdateEmployee)
 			r.Delete("/{uid}", DeleteEmployee)
 			r.Get("/{uid}", FindEmployee)
-
-			r.Get("/events", httpsub.HTTPHandler)
+		})
+		r.Route("/event", func(r chi.Router) {
+			r.Post("/{event}", AddEmployeeToTeam)
+			r.Delete("/{event}", DeleteEmployeeToTeam)
 		})
 	})
 }
@@ -53,6 +57,12 @@ func Serve(ctx context.Context, addr string) (err error) {
 
 	errChan := make(chan error, 1)
 
+	// pub-sub
+	httppub.Init()
+	httpsub.Init()
+	publishAdd()
+	publishDelete()
+
 	go func(ctx context.Context, errChan chan error) {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errChan <- err
@@ -67,4 +77,25 @@ func Serve(ctx context.Context, addr string) (err error) {
 	case err = <-errChan:
 		return err
 	}
+
+}
+
+func publishAdd() { // oke
+	url := url.URL{
+		Scheme: "http",
+		Host:   "localhost:8181",
+		Path:   "/api/v1/event/employee-team",
+	}
+	pub := httppub.NewPublisher("employee-team", url, nil)
+	httppub.ConnectPub(*pub, "employee-team")
+}
+
+func publishDelete() { // oke
+	url := url.URL{
+		Scheme: "http",
+		Host:   "localhost:8181",
+		Path:   "/api/v1/event/employee-team",
+	}
+	pub := httppub.NewPublisher("employee-team", url, nil)
+	httppub.ConnectPub(*pub, "employee-team")
 }
