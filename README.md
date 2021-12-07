@@ -3,74 +3,88 @@
 2. Connect to Database and save information
 4. Write API for employees and teams 
 ## Getting Started
- 1. Install MySQL 
- 2. Create file `dev_config.json` in folder `pkg/config`  
- 3. Configure features in file `config/dev_config.json` the following format: 
-	 ``` json
-	 { 
-		 "DB_USERNAME": <YOUR_USERNAME>,
-		 "DB_PASSWORD": <YOUR_PASSWORD>,
-		 "DB_PORT": "3306",
-		 "DB_HOST": "127.0.0.1",
-		 "DB_NAME": "manager_employee"
-	 }
-	 ```
+ 1. Install MongoDB 
+ 2. Create file `.env` in folder `employee/configs` for employee and `team/configs` for team
+ 3. Configure features in file `.env` the following format in file `env.example`
  4. We must install package: `tkanos/gonfig`,  `github.com/go-chi/chi`, `go-sql-driver/mysql` by the following:
 ``` console
 go get github.com/go-chi/chi
 go get github.com/go-sql-driver/mysql
 go get github.com/tkanos/gonfig
 ```
- 5. Before running the program, you must set up the database by running the command: 
+ 5. Before running the program, you must set up the MongoDB: 
+ 	5.1 Schema: employee
+	5.2 Collection: employee
+	5.3 Schema: team
+	5.4 Collection: team
  
- 	`go run build/database/build_db.go`
- 
- 6. Use command:  `go run cmd/web/*.go` run program 
- 7. API :
+ 6. Use command:  `go run employee/cmd/httpapi/main.go` run employee serve 
+ 7. Use command:  `go run team/cmd/httpapi/main.go` run team serve 
+ 8. API :
 	* Get list all employees: 
 	```url
-        localhost:8080/employees (GET)
+        localhost:8282/employees (GET)
 	```
 	* Get list all teams:
 	```url
-        localhost:8080/teams (GET)
+        localhost:8181/teams (GET)
 	```
 	* Search employee by id:
 	```url
-	    localhost:8080/employee/{id} (GET)
+	    localhost:8282/employee/{id} (GET)
 	```
     * Search team by id:
 	```url
-	    localhost:8080/team/{id} (GET)
+	    localhost:8181/team/{id} (GET)
 	```
     *  Create employee: 
     ``` url
-        localhost:8080/employee (POST)
+        localhost:8282/employee (POST)
     ```
+    Example Body: 
+	```json
+	{
+	    "name" : "hien",
+	    "gender" :2, 
+	    "dob" : "2001-11-11"
+	}
+	```
     *  Create team: 
     ``` url
-        localhost:8080/team (POST)
+        localhost:8181/team (POST)
     ```
+    Example Body:
+    ```json
+	{
+	     "name": "pentest"
+	}
+	```
     * Update employee:
     ``` url
-        localhost:8080/employee/{id} (PUT)
+        localhost:8282/employee/{id} (PUT)
     ```
     * Update team:
     ``` url
-        localhost:8080/team/{id} (PUT)
+        localhost:8181/team/{id} (PUT)
     ```
     * Delete employee: 
     ``` url 
-        localhost:8080/employee/{id} (DELETE)
+        localhost:8282/employee/{id} (DELETE)
     ```
     * Delete team: 
     ``` url 
-        localhost:8080/team/{id} (DELETE)
+        localhost:8181/team/{id} (DELETE)
     ```
 
     * Delete/Add employee join to team:
     ```url 
-        localhost:8080/employee/{idEmp}/team/{idTeam} (POST/DELETE)
+        localhost:8282/api/v1/event/employee-team (POST)
     ``` 
-
+	* Example Body: 
+	``` json 
+	{
+	    "eid":"5b23489a-d6c7-42f6-9a41-65edd53aaf6f",
+	    "tid":"6f31a96c-1981-460f-a387-413c655b9edb"
+	}
+	```
 
